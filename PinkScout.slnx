@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="PinkScoutApp/PinkScoutApp.csproj" />
+  <Project Path="PinkScoutClasslib/PinkScoutClasslib.csproj" />
+</Solution>
