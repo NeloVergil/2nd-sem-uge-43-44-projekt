@@ -4,7 +4,7 @@ using System.Text;
 
 namespace PinkScoutClasslib.Interfaces
 {
-    internal interface IActivityService1
+    internal interface IActivityService
     {
     }
 }
