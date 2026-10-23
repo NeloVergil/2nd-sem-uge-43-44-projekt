@@ -1,7 +1,18 @@
+using PinkScoutClasslib;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
+
+builder.Services.AddSingleton<LoginRepository>(serviceProvider =>
+{
+    var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+    var connectionString = configuration.GetConnectionString("PinkScoutDb")
+        ?? throw new InvalidOperationException(
+            "The connection string 'PinkScoutDb' is not configured.");
+    return new LoginRepository(connectionString);
+});
 
 var app = builder.Build();
 
@@ -13,7 +24,10 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 
 app.UseRouting();
 
