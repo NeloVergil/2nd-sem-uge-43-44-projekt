@@ -11,6 +11,14 @@ public class ActivityService
         _activityRepository = activityRepository;
         _loginRepository = loginRepository;
     }
+    public List<Activity> GetWeeklySchedule()
+    {
+        return _activityRepository.GetAllActivities();
+    }
+    public Activity GetActivityByTitle(string title)
+    {
+        return _activityRepository.ReadActivity(title);
+    }
 
     public void RegisterUser(User user, Activity activity)
     {
@@ -20,6 +28,11 @@ public class ActivityService
     public void UnregisterUser(User user, Activity activity)
     {
 
+    }
+
+    public Activity GetActivity(int id)
+    {
+        throw new NotImplementedException();
     }
 
     public List<Activity> GetActivitiesForUser(User user)

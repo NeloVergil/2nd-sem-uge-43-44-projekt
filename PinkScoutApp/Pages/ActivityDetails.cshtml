@@ -1,0 +1,36 @@
+
+@page
+@model PinkScoutApp.Pages.ActivityDetails
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<html>
+<head>
+    <title>Beskrivelse af de enkelte aktiviteter</title>
+    <div class="text-center mt-4">
+    </div>
+</head>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<body>
+<div>
+    <hr/>
+
+    <div class="container d-flex justify-content-center">
+        <div class="position-center bg-info rounded-1 p-4 text-white" style="width:1300px;">
+            <h6 class="mb-3 fs-2 fw-bold">@Model.at.Title</h6>
+            <h6 class="mb-3 fs-4">Kapasitet @Model.at.Description</h6>
+            <h6 class="text-wrap fs-4 mb-3" > @Model.at.DayOfWeek</h6>
+            <h6 class="text-wrap fs-4 mb-3" > @Model.at.TimeSlot</h6>
+            <h6 class="text-wrap fs-4 mb-3" > @Model.at.minimumAge</h6>
+            <h6 class="text-wrap fs-4 mb-3" > @Model.at.maximumParticipantCount</h6>
+            
+        </div>
+
+    </div>
+</div>
+</body>
+</html>

@@ -9,9 +9,10 @@ public class ActivityRepository /*: IActivityRepository*/
         _activities = activities;
     }
 
-    public void CreateActivity(string title, string description, DateTime starttime, DateTime endtime, int minimumAge, int maximumParticipantCount)
+    public void CreateActivity(string id, string title, string description, string dayOfWeek, string timeSlot, int minimumAge, int maximumParticipantCount)
     {
-        Activity activity = new Activity(title, description, starttime, endtime, minimumAge, maximumParticipantCount);
+        Activity activity =
+            new Activity(id, title, description, dayOfWeek, timeSlot, minimumAge, maximumParticipantCount);
         _activities.Add(activity);
     }
 
@@ -20,14 +21,15 @@ public class ActivityRepository /*: IActivityRepository*/
         return _activities.FirstOrDefault(a => a.Title == title);
     }
 
-    public void UpdateActivity(string title, string description, DateTime starttime, DateTime endtime, int minimumAge, int maximumParticipantCount)
+    public void UpdateActivity(string id, string title, string description, string dayOfWeek, string timeSlot, int minimumAge, int maximumParticipantCount)
+    
     {
         Activity activity = _activities.FirstOrDefault(a => a.Title == title);
         if (activity != null)
         {
             activity.Description = description;
-            activity.starttime = starttime;
-            activity.endtime = endtime;
+            activity.DayOfWeek = dayOfWeek;
+            activity.TimeSlot = timeSlot;
             activity.minimumAge = minimumAge;
             activity.maximumParticipantCount = maximumParticipantCount;
         }
@@ -40,8 +42,11 @@ public class ActivityRepository /*: IActivityRepository*/
         {
             _activities.Remove(activity);
         }
-
     
+    }
+    public List<Activity> GetAllActivities()
+    {
+        return _activities;
     }
 }
 
