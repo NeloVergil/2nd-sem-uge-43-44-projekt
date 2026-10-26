@@ -30,6 +30,11 @@ public class ActivityService
 
     }
 
+    public Activity GetActivity(int id)
+    {
+        throw new NotImplementedException();
+    }
+
     public List<Activity> GetActivitiesForUser(User user)
     {
         return new List<Activity>();
