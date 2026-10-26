@@ -17,6 +17,14 @@ builder.Services.AddSingleton<LoginRepository>(serviceProvider =>
     return new LoginRepository(connectionString);
 });
 
+builder.Services.AddSingleton<ActivityRepository>(serviceProvider =>
+{
+    var initialActivities = new List<Activity>();
+    return new ActivityRepository(initialActivities);
+});
+
+builder.Services.AddScoped<ActivityService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

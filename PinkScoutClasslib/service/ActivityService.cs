@@ -11,6 +11,14 @@ public class ActivityService
         _activityRepository = activityRepository;
         _loginRepository = loginRepository;
     }
+    public List<Activity> GetWeeklySchedule()
+    {
+        return _activityRepository.GetAllActivities();
+    }
+    public Activity GetActivityByTitle(string title)
+    {
+        return _activityRepository.ReadActivity(title);
+    }
 
     public void RegisterUser(User user, Activity activity)
     {
