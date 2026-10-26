@@ -23,6 +23,11 @@
                 <span asp-validation-for="Input.Password" class="text-danger"></span>
             </div>
 
+            <div class="form-check mb-3">
+                <input asp-for="Input.IsLeader" class="form-check-input" />
+                <label asp-for="Input.IsLeader" class="form-check-label">Create leader account</label>
+            </div>
+
             <button type="submit" class="btn btn-primary">Create account</button>
         </form>
 

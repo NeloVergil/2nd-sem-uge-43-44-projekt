@@ -1,9 +1,12 @@
 using PinkScoutClasslib;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie();
 
 builder.Services.AddSingleton<LoginRepository>(serviceProvider =>
 {
@@ -31,6 +34,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();
