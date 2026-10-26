@@ -3,66 +3,78 @@ using Microsoft.Data.SqlClient;
 
 namespace PinkScoutClasslib;
 
-public sealed class LoginRepository
+public sealed class LoginRepository : Repository
 {
     private const int HashIterations = 100_000;
-    private readonly string _connectionString;
 
     public LoginRepository(string connectionString)
+        : base(connectionString)
     {
-        _connectionString = string.IsNullOrWhiteSpace(connectionString)
-            ? throw new ArgumentException("A database connection string is required.", nameof(connectionString))
-            : connectionString;
     }
 
-    public async Task<bool> CreateUserAsync(
+    public async Task<User?> CreateUserAsync(
         string username,
         string password,
+        bool isLeader,
         CancellationToken cancellationToken = default)
     {
         var passwordHash = HashPassword(password);
 
-        await using var connection = new SqlConnection(_connectionString);
+        await using var connection = CreateConnection();
         await connection.OpenAsync(cancellationToken);
 
         const string sql = """
             IF EXISTS (SELECT 1 FROM UserAuth WHERE UserName = @UserName)
-                SELECT CAST(0 AS bit);
-            ELSE
-            BEGIN
-                INSERT INTO UserAuth (UserName, PasswordHash, IsLeader)
-                VALUES (@UserName, @PasswordHash, 0);
-                SELECT CAST(1 AS bit);
-            END
+                RETURN;
+
+            INSERT INTO UserAuth (UserName, PasswordHash, IsLeader)
+            OUTPUT INSERTED.Id, INSERTED.UserName, INSERTED.PasswordHash, INSERTED.IsLeader
+            VALUES (@UserName, @PasswordHash, @IsLeader);
             """;
 
         await using var command = new SqlCommand(sql, connection);
         command.Parameters.AddWithValue("@UserName", username);
         command.Parameters.AddWithValue("@PasswordHash", passwordHash);
+        command.Parameters.AddWithValue("@IsLeader", isLeader);
 
-        return (bool)(await command.ExecuteScalarAsync(cancellationToken)
-            ?? throw new InvalidOperationException("Creating the user returned no result."));
+        await using var reader = await command.ExecuteReaderAsync(cancellationToken);
+        return await reader.ReadAsync(cancellationToken)
+            ? ReadUser(reader)
+            : null;
     }
 
-    public async Task<bool> ValidateCredentialsAsync(
+    public async Task<User?> ValidateCredentialsAsync(
         string username,
         string password,
         CancellationToken cancellationToken = default)
     {
-        await using var connection = new SqlConnection(_connectionString);
+        await using var connection = CreateConnection();
         await connection.OpenAsync(cancellationToken);
 
         const string sql = """
-            SELECT PasswordHash
+            SELECT Id, UserName, PasswordHash, IsLeader
             FROM UserAuth
             WHERE UserName = @UserName
             """;
 
         await using var command = new SqlCommand(sql, connection);
         command.Parameters.AddWithValue("@UserName", username);
-        var storedHash = await command.ExecuteScalarAsync(cancellationToken) as string;
+        await using var reader = await command.ExecuteReaderAsync(cancellationToken);
+        if (!await reader.ReadAsync(cancellationToken))
+            return null;
 
-        return storedHash is not null && VerifyPassword(password, storedHash);
+        var user = ReadUser(reader);
+        return VerifyPassword(password, user.PasswordHash) ? user : null;
+    }
+
+    private static User ReadUser(SqlDataReader reader)
+    {
+        return new User(
+            reader.GetInt32(0),
+            reader.GetString(1),
+            reader.GetString(2),
+            reader.GetBoolean(3),
+            0);
     }
 
     private static string HashPassword(string password)
