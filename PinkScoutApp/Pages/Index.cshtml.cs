@@ -1,3 +1,6 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.ComponentModel.DataAnnotations;
@@ -26,16 +29,42 @@ public class IndexModel : PageModel
         if (!ModelState.IsValid)
             return Page();
 
-        if (!await _loginRepository.ValidateCredentialsAsync(
+        var user = await _loginRepository.ValidateCredentialsAsync(
                 Input.Username,
                 Input.Password,
-                cancellationToken))
+                cancellationToken);
+
+        if (user is null)
         {
             ModelState.AddModelError(string.Empty, "Invalid username or password.");
             return Page();
         }
 
-        return RedirectToPage("/Home");
+        await HttpContext.SignInAsync(
+            CookieAuthenticationDefaults.AuthenticationScheme,
+            CreatePrincipal(user));
+
+        if (user.IsLeader)
+            return RedirectToPage("/LeaderPage");
+        else
+            return RedirectToPage("/ScoutPage");
+    }
+
+    private static ClaimsPrincipal CreatePrincipal(User user)
+    {
+        var claims = new List<Claim>
+        {
+            new(ClaimTypes.Name, user.Name)
+        };
+
+        if (user.IsLeader)
+            claims.Add(new Claim(ClaimTypes.Role, "leader"));
+        else
+            claims.Add(new Claim(ClaimTypes.Role, "scout"));
+
+        return new ClaimsPrincipal(new ClaimsIdentity(
+            claims,
+            CookieAuthenticationDefaults.AuthenticationScheme));
     }
 
     public sealed class CredentialsInput

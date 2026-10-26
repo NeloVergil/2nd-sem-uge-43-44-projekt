@@ -1,16 +1,19 @@
 using PinkScoutClasslib;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie();
 
 builder.Services.AddSingleton<LoginRepository>(serviceProvider =>
 {
     var configuration = serviceProvider.GetRequiredService<IConfiguration>();
-    var connectionString = configuration.GetConnectionString("PinkScoutDb")
+    var connectionString = configuration.GetConnectionString("PinkScoutDB")
         ?? throw new InvalidOperationException(
-            "The connection string 'PinkScoutDb' is not configured.");
+            "The connection string 'PinkScoutDB' is not configured.");
     return new LoginRepository(connectionString);
 });
 
@@ -39,6 +42,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();
