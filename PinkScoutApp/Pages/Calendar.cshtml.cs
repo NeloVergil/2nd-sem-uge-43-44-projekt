@@ -2,11 +2,11 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using PinkScoutClasslib;
 namespace PinkScoutApp.Pages;
 
-public class Calendar : PageModel
+public class CalendarModel : PageModel
 {
     private readonly ActivityService _activityService;
 
-    public Calendar(ActivityService activityService)
+    public CalendarModel(ActivityService activityService)
     {
         _activityService = activityService;
     }
