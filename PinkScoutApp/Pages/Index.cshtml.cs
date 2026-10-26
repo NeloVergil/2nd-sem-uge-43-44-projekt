@@ -44,7 +44,10 @@ public class IndexModel : PageModel
             CookieAuthenticationDefaults.AuthenticationScheme,
             CreatePrincipal(user));
 
-        return RedirectToPage("/Home");
+        if (user.IsLeader)
+            return RedirectToPage("/LeaderPage");
+        else
+            return RedirectToPage("/ScoutPage");
     }
 
     private static ClaimsPrincipal CreatePrincipal(User user)
@@ -56,6 +59,8 @@ public class IndexModel : PageModel
 
         if (user.IsLeader)
             claims.Add(new Claim(ClaimTypes.Role, "leader"));
+        else
+            claims.Add(new Claim(ClaimTypes.Role, "scout"));
 
         return new ClaimsPrincipal(new ClaimsIdentity(
             claims,

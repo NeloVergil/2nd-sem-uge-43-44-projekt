@@ -11,9 +11,9 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 builder.Services.AddSingleton<LoginRepository>(serviceProvider =>
 {
     var configuration = serviceProvider.GetRequiredService<IConfiguration>();
-    var connectionString = configuration.GetConnectionString("PinkScoutDb")
+    var connectionString = configuration.GetConnectionString("PinkScoutDB")
         ?? throw new InvalidOperationException(
-            "The connection string 'PinkScoutDb' is not configured.");
+            "The connection string 'PinkScoutDB' is not configured.");
     return new LoginRepository(connectionString);
 });
 
