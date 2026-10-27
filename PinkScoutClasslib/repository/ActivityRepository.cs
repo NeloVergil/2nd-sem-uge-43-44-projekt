@@ -1,13 +1,21 @@
+using Microsoft.Data.SqlClient;
 namespace PinkScoutClasslib;
 
-public class ActivityRepository /*: IActivityRepository*/
+public class ActivityRepository : Repository
 {
-    private List<Activity> _activities;
-
-    public ActivityRepository(List<Activity> activities)
+    
+    public ActivityRepository(string connectionString)
+        : base(connectionString)
     {
-        _activities = activities;
     }
+    private readonly string _connectionString;
+    
+    private List<Activity> _activities;
+    //
+    // public ActivityRepository(List<Activity> activities)
+    // {
+    //     _activities = activities;
+    // }
 
     public void CreateActivity(string id, string title, string description, string dayOfWeek, string timeSlot, int minimumAge, int maximumParticipantCount)
     {
@@ -48,6 +56,34 @@ public class ActivityRepository /*: IActivityRepository*/
     {
         return _activities;
     }
+
+
+
+
+
+
+
+    public void Create(Activity newactivity)
+    {
+        string Sql =
+            "insert into Activity ( id, title, description, dayOfWeek, timeslot, minimumAge, maximumParticipantCount) values (@id, @title, @description, @dayOfWeek, @timeslot, @minimumAge, @maximumParticipantCount)";
+        using (SqlConnection connection = CreateConnection())
+        {
+            using (SqlCommand command = new SqlCommand(Sql, connection))
+            {
+                command.Parameters.AddWithValue("@id", newactivity.Id);
+                command.Parameters.AddWithValue("@title", newactivity.Title);
+                //command.Parameters.AddWithValue("@description", newactivity.Description);
+                //command.Parameters.AddWithValue("@dayOfWeek", newactivity.DayOfWeek);
+               // command.Parameters.AddWithValue("@timeslot", newactivity.TimeSlot);
+               // command.Parameters.AddWithValue("@minimumAge", newactivity.minimumAge);
+               // command.Parameters.AddWithValue("@maximumParticipantCount", newactivity.maximumParticipantCount);
+                command.ExecuteNonQuery();
+            }
+        }
+    }
+    
+    
 }
 
 
