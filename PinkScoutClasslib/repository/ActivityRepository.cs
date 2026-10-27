@@ -3,14 +3,12 @@ namespace PinkScoutClasslib;
 
 public class ActivityRepository : Repository
 {
-    
+
     public ActivityRepository(string connectionString)
         : base(connectionString)
     {
     }
-    private readonly string _connectionString;
-    
-    private List<Activity> _activities;
+    private readonly List<Activity> _activities = new();
     //
     // public ActivityRepository(List<Activity> activities)
     // {
@@ -30,7 +28,7 @@ public class ActivityRepository : Repository
     }
 
     public void UpdateActivity(string id, string title, string description, string dayOfWeek, string timeSlot, int minimumAge, int maximumParticipantCount)
-    
+
     {
         Activity activity = _activities.FirstOrDefault(a => a.Title == title);
         if (activity != null)
@@ -43,14 +41,14 @@ public class ActivityRepository : Repository
         }
     }
 
-        public void DeleteActivity(string title)
+    public void DeleteActivity(string title)
     {
         Activity activity = _activities.FirstOrDefault(a => a.Title == title);
         if (activity != null)
         {
             _activities.Remove(activity);
         }
-    
+
     }
     public List<Activity> GetAllActivities()
     {
@@ -66,26 +64,25 @@ public class ActivityRepository : Repository
     public void Create(Activity newactivity)
     {
         string Sql =
-            "insert into Activity ( id, title, description, dayOfWeek, timeslot, minimumAge, maximumParticipantCount) values (@id, @title, @description, @dayOfWeek, @timeslot, @minimumAge, @maximumParticipantCount)";
+            "INSERT INTO Activity (ActivityName, ActivityDescription) values (@ActivityName, @ActivityDescription)";
         using (SqlConnection connection = CreateConnection())
         {
+            connection.Open();
+
             using (SqlCommand command = new SqlCommand(Sql, connection))
             {
-                command.Parameters.AddWithValue("@id", newactivity.Id);
-                command.Parameters.AddWithValue("@title", newactivity.Title);
-                //command.Parameters.AddWithValue("@description", newactivity.Description);
+                // command.Parameters.AddWithValue("@Id", newactivity.Id);
+                command.Parameters.AddWithValue("@ActivityName", newactivity.Title);
+                command.Parameters.AddWithValue("@ActivityDescription", newactivity.Description);
                 //command.Parameters.AddWithValue("@dayOfWeek", newactivity.DayOfWeek);
-               // command.Parameters.AddWithValue("@timeslot", newactivity.TimeSlot);
-               // command.Parameters.AddWithValue("@minimumAge", newactivity.minimumAge);
-               // command.Parameters.AddWithValue("@maximumParticipantCount", newactivity.maximumParticipantCount);
+                // command.Parameters.AddWithValue("@timeslot", newactivity.TimeSlot);
+                // command.Parameters.AddWithValue("@minimumAge", newactivity.minimumAge);
+                // command.Parameters.AddWithValue("@maximumParticipantCount", newactivity.maximumParticipantCount);
                 command.ExecuteNonQuery();
             }
         }
     }
-    
-    
+
+
 }
-
-
-
 

@@ -8,14 +8,35 @@
 <!DOCTYPE html>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <html>
+
 <head>
-    <title></title>
+    <title>LeaderCalendar</title>
 </head>
+
+<body>
+    <div>
+        <form method="post" class="mb-4">
+            <div class="mb-3">
+                <label for="title" class="form-label">Activity Title</label>
+                <input type="text" class="form-control" id="title" name="title" required />
+            </div>
+            <div class="mb-3">
+                <label for="description" class="form-label">Activity Description</label>
+                <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+            </div>
+            <button type="submit" asp-page-handler="CreateActivity" class="btn btn-primary">Create Activity</button>
+        </form>
+    </div>
+</body>
+
+</html>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <style>
     /* Gør cellerne bredere på mindre skærme, så tabellen ikke bliver mast */
     @@media screen and (max-width: 992px) {
-        .scout-table th, .scout-table td {
+
+        .scout-table th,
+        .scout-table td {
             min-width: 130px;
         }
     }
@@ -25,9 +46,10 @@
         text-decoration: none;
         transition: transform 0.2s, box-shadow 0.2s;
     }
+
     .activity-link:hover {
         transform: translateY(-2px);
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
     
     .activity-slot {
@@ -43,7 +65,8 @@
     <div class="row mb-4 text-center">
         <div class="col">
             <h1 class="display-4 fw-bold text-success">🏕️ Spejdernes Ugeskema</h1>
-            <p class="lead text-muted">Klik på en aktivitet for at se detaljer, hvem der er leder, og tilmelde dig.</p>
+            <p class="lead text-muted">Klik på en aktivitet for at se detaljer, hvem der er leder, og tilmelde dig.
+            </p>
         </div>
     </div>
 
@@ -70,9 +93,20 @@
                             <tr>
                                 <!-- Viser tidsrummet i venstre kolonne -->
                                 <td class="fw-bold text-secondary text-center">
-                                    @if(slot == "Formiddag") { <text>09:00 - 12:00</text> }
-                                    else if(slot == "Eftermiddag") { <text>16:30 - 18:30</text> }
-                                    else if(slot == "Aften") { <text>19:00 - 21:00</text> }
+                                    @if (slot == "Formiddag")
+                                    {
+                                        <text>09:00 - 12:00</text>
+                                    }
+                                    else if (slot == "Eftermiddag")
+                                    {
+
+                                        <text>16:30 - 18:30</text>
+                                    }
+                                    else if (slot == "Aften")
+                                    {
+
+                                        <text>19:00 - 21:00</text>
+                                    }
                                 </td>
 
                                 <!-- Looper igennem alle ugens 7 dage for dette tidsrum -->
@@ -83,7 +117,8 @@
                                         @if (Model.Schedule.TryGetValue((slot, day), out var activity))
                                         {
                                             @* asp-route-id sender automatisk aktivitetens int ID med over i URL'en *@
-                                            <a asp-page="/ActivityDetails" asp-route-id="@activity.Title" class="d-block card activity-link bg-primary text-white p-2">
+                                            <a asp-page="/ActivityDetails" asp-route-id="@activity.Title"
+                                               class="d-block card activity-link bg-primary text-white p-2">
                                                 <div class="activity-slot">
                                                     <span class="fw-bold small">@activity.Title</span>
                                                     <span class="badge bg-white text-dark btn-sm mt-1">Se info →</span>
