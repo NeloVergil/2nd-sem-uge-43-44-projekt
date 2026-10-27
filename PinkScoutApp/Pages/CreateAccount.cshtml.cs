@@ -56,8 +56,10 @@ public class CreateAccountModel : PageModel
             new ClaimsPrincipal(new ClaimsIdentity(
                 claims,
                 CookieAuthenticationDefaults.AuthenticationScheme)));
-
-        return RedirectToPage("/Home");
+        if (created.IsLeader)
+            return RedirectToPage("/LeaderPage");
+        else
+            return RedirectToPage("/ScoutPage");
     }
 
     public sealed class CredentialsInput
