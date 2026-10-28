@@ -13,18 +13,18 @@ public class ActivityRepository : Repository
     public void Create(Activity newactivity)
     {
         string Sql =
-            "insert into Activity ( id, title, description, dayOfWeek, timeslot, minimumAge, maximumParticipantCount) values (@id, @title, @description, @dayOfWeek, @timeslot, @minimumAge, @maximumParticipantCount)";
+            "insert into Activity (id, title, description, dayOfWeek, timeslot, minimumAge, maximumParticipantCount) values (@Id, @Title, @Description, @DayOfWeek, @Timeslot, @MinimumAge, @MaximumParticipantCount)";
         using (SqlConnection connection = CreateConnection())
         {
             using (SqlCommand command = new SqlCommand(Sql, connection))
             {
                 command.Parameters.AddWithValue("@id", newactivity.Id);
-                command.Parameters.AddWithValue("@title", newactivity.Title);
-                // command.Parameters.AddWithValue("@description", newactivity.Description);
-                // command.Parameters.AddWithValue("@dayOfWeek", newactivity.DayOfWeek);
-                // command.Parameters.AddWithValue("@timeslot", newactivity.TimeSlot);
-                // command.Parameters.AddWithValue("@minimumAge", newactivity.minimumAge);
-                // command.Parameters.AddWithValue("@maximumParticipantCount", newactivity.maximumParticipantCount);
+                command.Parameters.AddWithValue("@Activity", newactivity.Title);
+                command.Parameters.AddWithValue("@description", newactivity.Description);
+                command.Parameters.AddWithValue("@dayOfWeek", newactivity.DayOfWeek);
+                command.Parameters.AddWithValue("@timeslot", newactivity.TimeSlot);
+                command.Parameters.AddWithValue("@minimumAge", newactivity.minimumAge);
+                command.Parameters.AddWithValue("@maximumParticipantCount", newactivity.maximumParticipantCount);
                 command.ExecuteNonQuery();
             }
         }
@@ -58,19 +58,58 @@ public class ActivityRepository : Repository
                         return activity;
 
                     }
-                        else
-                        {
-                            return null;
-                        }
+                    else
+                    {
+                        return null;
+                    }
                 }
             }
         }
     }
 
+    public void UpdateActivity(Activity updatedactivity)
+    {
+        string Sql =
+        "insert into Activity (id, title, description, dayOfWeek, timeslot, minimumAge, maximumParticipantCount) values (@id, @title, @description, @dayOfWeek, @timeslot, @minimumAge, @maximumParticipantCount)";
+
+        using (SqlConnection connection = UpdateActivity())
+
+        using (SqlCommand command = new SqlCommand(Sql, connection))
+        {
+            command.Parameters.AddWithValue("@id", newactivity.Id);
+            command.Parameters.AddWithValue("@title", newactivity.Title);
+            command.Parameters.AddWithValue("@description", newactivity.Description);
+            command.Parameters.AddWithValue("@dayOfWeek", newactivity.DayOfWeek);
+            command.Parameters.AddWithValue("@timeslot", newactivity.TimeSlot);
+            command.Parameters.AddWithValue("@minimumAge", newactivity.minimumAge);
+            command.Parameters.AddWithValue("@maximumParticipantCount", newactivity.maximumParticipantCount);
+            command.ExecuteNonQuery();
+        }
+
+    }
+
+    public void DeleteActivity(int id)
+    {
+        string sql = "DELETE FROM Activity WHERE Id = @Id";
+
+        using (SqlConnection connection = CreateConnection())
+        {
+            connection.Open();
+
+            using (SqlCommand command = new SqlCommand(sql, connection))
+            {
+                command.Parameters.AddWithValue("@Id", id);
+
+                command.ExecuteNonQuery();
+            }
+        }
+    }
 
     public List<Activity> GetAllActivities()
     {
-        return ;
+        List<Activity> activities = new List<Activity>();
+
+        return activities;
     }
 
 
