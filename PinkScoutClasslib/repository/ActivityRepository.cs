@@ -13,7 +13,7 @@ public class ActivityRepository : Repository
     public void Create(Activity newActivity)
     {
         string Sql =
-            "insert into Activity ( Id, Name, Description, DayOfWeek, TimeSlot, MinimumAge, MaxParticipantNumber) values (@Id, @Name, @Description, @DayOfWeek, @TimeSlot, @MinimumAge, @MaxParticipantNumber)";
+            "insert into Activity (Id, Name, Description, DayOfWeek, TimeSlot, MinimumAge, MaxParticipantNumber) values (@Id, @Name, @Description, @DayOfWeek, @TimeSlot, @MinimumAge, @MaxParticipantNumber)";
         using (SqlConnection connection = CreateConnection())
         {
             using (SqlCommand command = new SqlCommand(Sql, connection))
@@ -70,19 +70,19 @@ public class ActivityRepository : Repository
     public void UpdateActivity(Activity updatedactivity)
     {
         string Sql =
-        "insert into Activity (id, title, description, dayOfWeek, timeslot, minimumAge, maximumParticipantCount) values (@id, @title, @description, @dayOfWeek, @timeslot, @minimumAge, @maximumParticipantCount)";
+        "insert into Activity (Id, Name, Description, DayOfWeek, Timeslot, MinimumAge, MaximumParticipantNumber) values (@Id, @Name, @Description, @DayOfWeek, @Timeslot, @MinimumAge, @MaximumParticipantCount)";
 
-        using (SqlConnection connection = UpdateActivity())
+        using (SqlConnection connection = CreateConnection())
 
         using (SqlCommand command = new SqlCommand(Sql, connection))
         {
-            command.Parameters.AddWithValue("@id", newactivity.Id);
-            command.Parameters.AddWithValue("@title", newactivity.Title);
-            command.Parameters.AddWithValue("@description", newactivity.Description);
-            command.Parameters.AddWithValue("@dayOfWeek", newactivity.DayOfWeek);
-            command.Parameters.AddWithValue("@timeslot", newactivity.TimeSlot);
-            command.Parameters.AddWithValue("@minimumAge", newactivity.minimumAge);
-            command.Parameters.AddWithValue("@maximumParticipantCount", newactivity.maximumParticipantCount);
+            command.Parameters.AddWithValue("@Id", newactivity.Id);
+            command.Parameters.AddWithValue("@Name", newactivity.Title);
+            command.Parameters.AddWithValue("@Description", newactivity.Description);
+            command.Parameters.AddWithValue("@DayOfWeek", newactivity.DayOfWeek);
+            command.Parameters.AddWithValue("@Timeslot", newactivity.TimeSlot);
+            command.Parameters.AddWithValue("@MinimumAge", newactivity.minimumAge);
+            command.Parameters.AddWithValue("@MaximumParticipantCount", newactivity.maximumParticipantCount);
             command.ExecuteNonQuery();
         }
 
