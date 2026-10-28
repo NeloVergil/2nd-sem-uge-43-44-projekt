@@ -2,28 +2,28 @@ namespace PinkScoutClasslib;
 
 public class Activity
 {
-    public string Id { get; set; }
-    public string Title { get; set; }
+    public int Id { get; set; }
+    public string Name { get; set; }
     public string Description { get; set; }
-    
+
     public string DayOfWeek { get; set; }
-    
+
     public string TimeSlot { get; set; }
-    public int minimumAge { get; set; }
-    public int maximumParticipantCount { get; set; }
+    public int MinimumAge { get; set; }
+    public int MaxParticipantNumber { get; set; }
 
-    public List<User> Users { get; set; } = new List<User>
-    { };
+    // public List<User> Users { get; set; }
 
-    public Activity(string id, string title, string description, string dayOfWeek, string timeSlot, int minimumAge, int maximumParticipantCount)
+    public Activity(int id, string name, string description, string dayOfWeek, string timeSlot, int minimumAge, int maxParticipantNumber/*, List<User> users*/)
     {
         Id = id;
-        Title = title;
+        Name = name;
         Description = description;
         DayOfWeek = dayOfWeek;
         TimeSlot = timeSlot;
-        this.minimumAge = minimumAge;
-        this.maximumParticipantCount = maximumParticipantCount;
+        MinimumAge = minimumAge;
+        MaxParticipantNumber = maxParticipantNumber;
+        // Users = users;
     }
 
 }
