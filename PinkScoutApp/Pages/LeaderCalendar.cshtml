@@ -1,8 +1,8 @@
 @page
-@model PinkScoutApp.Pages.LederCalendar
+@model LeaderCalendarModel
 
 @{
-    Layout = null;
+    ViewData["Title"] = "Calendar";
 }
 
 <!DOCTYPE html>
@@ -14,19 +14,6 @@
 </head>
 
 <body>
-    <div>
-        <form method="post" class="mb-4">
-            <div class="mb-3">
-                <label for="title" class="form-label">Activity Title</label>
-                <input type="text" class="form-control" id="title" name="title" required />
-            </div>
-            <div class="mb-3">
-                <label for="description" class="form-label">Activity Description</label>
-                <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
-            </div>
-            <button type="submit" asp-page-handler="CreateActivity" class="btn btn-primary">Create Activity</button>
-        </form>
-    </div>
 </body>
 
 </html>
@@ -79,70 +66,142 @@
             <div class="table-responsive">
                 <table class="table table-bordered table-striped scout-table m-0 align-middle text-center">
                     <thead class="table-light">
-                        <tr>
-                            <th style="width: 10%;">Tidspunkt</th>
-                            @foreach (var day in Model.Days)
-                            {
-                                <th style="width: 12.8%;">@day</th>
-                            }
-                        </tr>
+                    <tr>
+                        <th style="width: 10%;">Tidspunkt</th>
+                        @foreach (var day in Model.Days)
+                        {
+                            <th style="width: 12.8%;">@day</th>
+                        }
+                    </tr>
                     </thead>
                     <tbody>
-                        @foreach (var slot in Model.TimeSlots)
-                        {
-                            <tr>
-                                <!-- Viser tidsrummet i venstre kolonne -->
-                                <td class="fw-bold text-secondary text-center">
-                                    @if (slot == "Formiddag")
-                                    {
-                                        <text>09:00 - 12:00</text>
-                                    }
-                                    else if (slot == "Eftermiddag")
-                                    {
-
-                                        <text>16:30 - 18:30</text>
-                                    }
-                                    else if (slot == "Aften")
-                                    {
-
-                                        <text>19:00 - 21:00</text>
-                                    }
-                                </td>
-
-                                <!-- Looper igennem alle ugens 7 dage for dette tidsrum -->
-                                @foreach (var day in Model.Days)
+                    @foreach (var slot in Model.TimeSlots)
+                    {
+                        <tr>
+                            <!-- Viser tidsrummet i venstre kolonne -->
+                            <td class="fw-bold text-secondary text-center">
+                                @if (slot == "Formiddag")
                                 {
-                                    <td>
-                                        @* Slår op i din Dictionary for at se, om der er en aktivitet på dette tidspunkt *@
-                                        @if (Model.Schedule.TryGetValue((slot, day), out var activity))
+                                    <text>09:00 - 12:00</text>
+                                }
+                                else if (slot == "Eftermiddag")
+                                {
+
+                                    <text>16:30 - 18:30</text>
+                                }
+                                else if (slot == "Aften")
+                                {
+
+                                    <text>19:00 - 21:00</text>
+                                }
+                            </td>
+
+                            <!-- Looper igennem alle ugens 7 dage for dette tidsrum -->
+                            @foreach (var day in Model.Days)
+                            {
+                                <td>
+                                    @* Slår op i din Dictionary for at se, om der er en aktivitet på dette tidspunkt *@
+                                    @if (Model.Schedule.TryGetValue((slot, day), out var activity))
+                                    {
+                                        @* asp-route-id sender automatisk aktivitetens int ID med over i URL'en *@
+                                        <a asp-page="/ActivityDetails" asp-route-id="@activity.Title"
+                                           class="d-block card activity-link bg-primary text-white p-2">
+                                            <div class="activity-slot">
+                                                <span class="fw-bold small">@activity.Title</span>
+                                                <span class="badge bg-white text-dark btn-sm mt-1">Se info →</span>
+                                            </div>
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        @* Hvis der ikke er en aktivitet, viser vi standardtekst eller en streg *@
+                                        @if (slot == "Formiddag" && day != "Lørdag" && day != "Søndag")
                                         {
-                                            @* asp-route-id sender automatisk aktivitetens int ID med over i URL'en *@
-                                            <a asp-page="/ActivityDetails" asp-route-id="@activity.Title"
-                                               class="d-block card activity-link bg-primary text-white p-2">
-                                                <div class="activity-slot">
-                                                    <span class="fw-bold small">@activity.Title</span>
-                                                    <span class="badge bg-white text-dark btn-sm mt-1">Se info →</span>
-                                                </div>
-                                            </a>
+                                            <span class="text-muted small table-light d-block py-3">Skole / Job</span>
                                         }
                                         else
                                         {
-                                            @* Hvis der ikke er en aktivitet, viser vi standardtekst eller en streg *@
-                                            @if (slot == "Formiddag" && day != "Lørdag" && day != "Søndag")
-                                            {
-                                                <span class="text-muted small table-light d-block py-3">Skole / Job</span>
-                                            }
-                                            else
-                                            {
-                                                <span class="text-muted small">—</span>
-                                            }
+                                            <span class="text-muted small">—</span>
                                         }
-                                    </td>
-                                }
-                            </tr>
-                        }
+                                    }
+                                </td>
+                            }
+                        </tr>
+                    }
                     </tbody>
                 </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<hr/>
+<h1>Basic Modal</h1> 
+
+<button type="button" class="btn btn-success my-3" data-bs-toggle="modal" data-bs-target="#createActivityModal">
+    ➕ Opret ny aktivitet
+</button>
+
+<div id="createActivityModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle">Tilføj ny aktivitet</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" asp-page-handler="CreateActivity">
+                    
+                    <div class="mb-3">
+                        <label for="actTitle" class="form-label fw-bold">Navn på aktiviteten</label>
+                        <input type="text" class="form-control" id="actTitle" name="title" placeholder="F.eks. Bålhygge" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="actDesc" class="form-label fw-bold">Beskrivelse</label>
+                        <textarea class="form-control" id="actDesc" name="description" rows="3" placeholder="Hvad skal spejderne lave?" required></textarea>
+                    </div>
+                    
+                    <div class="row"> 
+                        <div class="col-md-6 mb-3">
+                            <label for="actDay" class="form-label fw-bold">Ugedag</label>
+                            <select class="form-select" id="actDay" name="dayOfWeek" required>
+                                @foreach (var day in Model.Days)
+                                {
+                                    <option value="@day">@day</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="actSlot" class="form-label fw-bold">Tidspunkt</label>
+                            <select class="form-select" id="actSlot" name="timeSlot" required>
+                                @foreach (var slot in Model.TimeSlots)
+                                {
+                                    <option value="@slot">@slot</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="minAge" class="form-label fw-bold">Minimumsalder</label>
+                            <input type="number" class="form-control" id="minAge" name="minimumAge" value="6" min="1" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="maxScouts" class="form-label fw-bold">Max deltagere</label>
+                            <input type="number" class="form-control" id="maxScouts" name="maximumParticipantCount" value="20" min="1" required>
+                        </div>
+                    </div>
+                    
+  
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-success">Opret og tilføj til ugeskema 🪵</button>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
