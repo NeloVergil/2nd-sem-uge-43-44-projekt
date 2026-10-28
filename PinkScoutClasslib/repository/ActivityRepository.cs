@@ -3,7 +3,7 @@ namespace PinkScoutClasslib;
 
 public class ActivityRepository : Repository
 {
-    
+
     public ActivityRepository(string connectionString)
         : base(connectionString)
     {
@@ -72,10 +72,7 @@ public class ActivityRepository : Repository
     {
         return ;
     }
-    
-    
+
+
 }
-
-
-
 
