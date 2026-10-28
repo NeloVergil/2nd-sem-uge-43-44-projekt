@@ -8,5 +8,6 @@ public class ScoutPageModel : PageModel
 {
     public void OnGet()
     {
+
     }
 }
