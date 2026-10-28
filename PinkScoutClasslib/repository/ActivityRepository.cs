@@ -10,24 +10,26 @@ public class ActivityRepository : Repository
     }
     private readonly string _connectionString;
 
-    public void Create(Activity newActivity)
+    public Activity CreateActivity(Activity newActivity)
     {
         string Sql =
-            "insert into Activity (Id, Name, Description, DayOfWeek, TimeSlot, MinimumAge, MaxParticipantNumber) values (@Id, @Name, @Description, @DayOfWeek, @TimeSlot, @MinimumAge, @MaxParticipantNumber)";
+            "insert into Activity (Name, Description, DayOfWeek, TimeSlot, MinimumAge, MaxParticipantNumber) output inserted.Id values (@Name, @Description, @DayOfWeek, @TimeSlot, @MinimumAge, @MaxParticipantNumber)";
         using (SqlConnection connection = CreateConnection())
         {
             using (SqlCommand command = new SqlCommand(Sql, connection))
             {
-                command.Parameters.AddWithValue("@Id", newActivity.Id);
                 command.Parameters.AddWithValue("@Name", newActivity.Name);
                 command.Parameters.AddWithValue("@Description", newActivity.Description);
                 command.Parameters.AddWithValue("@DayOfWeek", newActivity.DayOfWeek);
                 command.Parameters.AddWithValue("@TimeSlot", newActivity.TimeSlot);
                 command.Parameters.AddWithValue("@MinimumAge", newActivity.MinimumAge);
                 command.Parameters.AddWithValue("@MaxParticipantNumber", newActivity.MaxParticipantNumber);
-                command.ExecuteNonQuery();
+                int id = (int) command.ExecuteScalar();
+                newActivity.Id = id;
             }
-        }
+        }                
+        return newActivity;
+
     }
     public Activity? ReadActivity(int id)
     {
@@ -39,8 +41,6 @@ public class ActivityRepository : Repository
 
             using (SqlCommand command = new SqlCommand(sql, connection))
             {
-                command.Parameters.AddWithValue("@Id", id);
-
                 using (SqlDataReader reader = command.ExecuteReader())
                 {
                     if (reader.Read())
@@ -67,22 +67,21 @@ public class ActivityRepository : Repository
         }
     }
 
-    public void UpdateActivity(Activity updatedactivity)
+    public void UpdateActivity(Activity updatedActivity)
     {
         string Sql =
-        "insert into Activity (Id, Name, Description, DayOfWeek, Timeslot, MinimumAge, MaximumParticipantNumber) values (@Id, @Name, @Description, @DayOfWeek, @Timeslot, @MinimumAge, @MaximumParticipantCount)";
+        "insert into Activity (Name, Description, DayOfWeek, Timeslot, MinimumAge, MaximumParticipantNumber) values (@Name, @Description, @DayOfWeek, @Timeslot, @MinimumAge, @MaximumParticipantCount)";
 
         using (SqlConnection connection = CreateConnection())
 
         using (SqlCommand command = new SqlCommand(Sql, connection))
         {
-            command.Parameters.AddWithValue("@Id", newactivity.Id);
-            command.Parameters.AddWithValue("@Name", newactivity.Title);
-            command.Parameters.AddWithValue("@Description", newactivity.Description);
-            command.Parameters.AddWithValue("@DayOfWeek", newactivity.DayOfWeek);
-            command.Parameters.AddWithValue("@Timeslot", newactivity.TimeSlot);
-            command.Parameters.AddWithValue("@MinimumAge", newactivity.minimumAge);
-            command.Parameters.AddWithValue("@MaximumParticipantCount", newactivity.maximumParticipantCount);
+            command.Parameters.AddWithValue("@Name", updatedActivity.Name);
+            command.Parameters.AddWithValue("@Description", updatedActivity.Description);
+            command.Parameters.AddWithValue("@DayOfWeek", updatedActivity.DayOfWeek);
+            command.Parameters.AddWithValue("@Timeslot", updatedActivity.TimeSlot);
+            command.Parameters.AddWithValue("@MinimumAge", updatedActivity.MinimumAge);
+            command.Parameters.AddWithValue("@MaximumParticipantCount", updatedActivity.MaxParticipantNumber);
             command.ExecuteNonQuery();
         }
 

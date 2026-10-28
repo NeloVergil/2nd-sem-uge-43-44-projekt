@@ -5,9 +5,7 @@ public class Activity
     public int Id { get; set; }
     public string Name { get; set; }
     public string Description { get; set; }
-
     public string DayOfWeek { get; set; }
-
     public string TimeSlot { get; set; }
     public int MinimumAge { get; set; }
     public int MaxParticipantNumber { get; set; }

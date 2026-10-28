@@ -104,10 +104,10 @@
                                     @if (Model.Schedule.TryGetValue((slot, day), out var activity))
                                     {
                                         @* asp-route-id sender automatisk aktivitetens int ID med over i URL'en *@
-                                        <a asp-page="/ActivityDetails" asp-route-id="@activity.Title"
+                                        <a asp-page="/ActivityDetails" asp-route-id="@activity.Name"
                                            class="d-block card activity-link bg-primary text-white p-2">
                                             <div class="activity-slot">
-                                                <span class="fw-bold small">@activity.Title</span>
+                                                <span class="fw-bold small">@activity.Name</span>
                                                 <span class="badge bg-white text-dark btn-sm mt-1">Se info →</span>
                                             </div>
                                         </a>
