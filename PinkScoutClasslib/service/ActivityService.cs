@@ -1,6 +1,6 @@
 namespace PinkScoutClasslib;
 
-public class ActivityService
+public class ActivityService : Repository
 {
     private ActivityRepository _activityRepository;
     private LoginRepository _loginRepository;

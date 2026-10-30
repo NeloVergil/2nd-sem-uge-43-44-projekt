@@ -16,6 +16,7 @@ public class ActivityRepository : Repository
             "insert into Activity (Name, Description, DayOfWeek, TimeSlot, MinimumAge, MaxParticipantNumber) output inserted.Id values (@Name, @Description, @DayOfWeek, @TimeSlot, @MinimumAge, @MaxParticipantNumber)";
         using (SqlConnection connection = CreateConnection())
         {
+
             using (SqlCommand command = new SqlCommand(Sql, connection))
             {
                 command.Parameters.AddWithValue("@Name", newActivity.Name);
