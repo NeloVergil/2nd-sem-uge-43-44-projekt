@@ -1,4 +1,3 @@
-
 namespace PinkScoutClasslib;
 
 public class ActivityService
@@ -40,5 +39,40 @@ public class ActivityService
         return new List<Activity>();
     }
 
+    public List<User> GetUsersFromActivity(int activityId)
+    {
+        List<User> users = new List<User>();
+
+        string sql = @"SELECT [User].*
+                   FROM [User]
+                   JOIN Registration ON [User].Id = Registration.UserId
+                   WHERE Registration.ActivityId = @Id";
+
+        using SqlConnection connection = CreateConnection();
+        connection.Open();
+
+        using SqlCommand command = new SqlCommand(sql, connection);
+        command.Parameters.AddWithValue("@Id", activityId);
+
+        using SqlDataReader reader = command.ExecuteReader();
+
+        while (reader.Read())
+        {
+            User user = new User(
+                reader.GetInt32(reader.GetOrdinal("Id")),
+                reader.GetString(reader.GetOrdinal("Name")),
+                reader.GetString(reader.GetOrdinal("PasswordHash")),
+                reader.GetBoolean(reader.GetOrdinal("IsLeader")),
+                reader.GetInt32(reader.GetOrdinal("Age"))
+            );
+
+            users.Add(user);
+        }
+
+        return users;
+    }
 }
+
+
+
 
