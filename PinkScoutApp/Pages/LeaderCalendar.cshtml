@@ -153,8 +153,8 @@
                 <form method="post" asp-page-handler="CreateActivity">
                     
                     <div class="mb-3">
-                        <label for="actTitle" class="form-label fw-bold">Navn på aktiviteten</label>
-                        <input type="text" class="form-control" id="actTitle" name="title" placeholder="F.eks. Bålhygge" required>
+                        <label for="actName" class="form-label fw-bold">Navn på aktiviteten</label>
+                        <input type="text" class="form-control" id="actName" name="Name" placeholder="F.eks. Bålhygge" required>
                     </div>
                     
                     <div class="mb-3">
@@ -204,5 +204,26 @@
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
+    </div>
+</div>
+<div class="dropdown mt-2">
+    <button class="btn btn-success dropdown-toggle fw-bold" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        🗑️ Slet en aktivitet
+    </button>
+    
+    <div class="dropdown-menu p-3 shadow" style="min-width: 300px;">
+        <form method="post" asp-page-handler="DeleteActivity">
+            <div class="mb-3">
+                <label for="deleteSelect" class="form-label small fw-bold text-muted">Vælg aktivitet:</label>
+                <select class="form-select form-select-sm" id="deleteSelect" name="activityName" required>
+                    <option value="" selected disabled>Vælg...</option>
+                    @foreach (var item in Model.Schedule.Values)
+                    {
+                        <option value="@item.Name">@item.Name</option>
+                    }
+                </select>
+            </div>
+            <button type="submit" class="btn btn-danger btn-sm w-100 fw-bold">Bekræft sletning</button>
+        </form>
     </div>
 </div>

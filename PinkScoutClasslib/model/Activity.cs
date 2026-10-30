@@ -23,5 +23,16 @@ public class Activity
         MaxParticipantNumber = maxParticipantNumber;
         // Users = users;
     }
+    public Activity(string name, string description, string dayOfWeek, string timeSlot, int minimumAge, int maxParticipantNumber/*, List<User> users*/)
+    {
+        //Id = id;
+        Name = name;
+        Description = description;
+        DayOfWeek = dayOfWeek;
+        TimeSlot = timeSlot;
+        MinimumAge = minimumAge;
+        MaxParticipantNumber = maxParticipantNumber;
+        // Users = users;
+    }
 
 }

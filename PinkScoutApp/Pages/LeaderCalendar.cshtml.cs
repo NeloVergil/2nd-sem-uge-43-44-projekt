@@ -29,9 +29,9 @@ public class LeaderCalendarModel : PageModel
         Schedule = activities.ToDictionary(a => (a.TimeSlot, a.DayOfWeek));
     }
 
-    public IActionResult OnPostCreateActivity(int id, string name, string description, string dayOfWeek, string timeSlot, int minimumAge, int maxParticipantNumber)
+    public IActionResult OnPostCreateActivity(string name, string description, string dayOfWeek, string timeSlot, int minimumAge, int maxParticipantNumber)
     {
-        var newActivity = new Activity(id, name, description, dayOfWeek, timeSlot, minimumAge, maxParticipantNumber);
+        Activity newActivity = new Activity( name, description, dayOfWeek, timeSlot, minimumAge, maxParticipantNumber);
 
         _activityRepository.CreateActivity(newActivity);
 
