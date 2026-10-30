@@ -14,13 +14,22 @@ public class ActivityService
     {
         return _activityRepository.GetAllActivities();
     }
-    public Activity GetActivityByTitle(string title)
+    public Activity GetActivityByName(string name)
     {
-        return _activityRepository.ReadActivity(title);
+        foreach (Activity activity in _activityRepository.GetAllActivities())
+        {
+            if (name == activity.Name)
+            {
+                return _activityRepository.ReadActivity(activity.Id);
+            }
+        }
+        return null;
+        
     }
 
     public void RegisterUser(User user, Activity activity)
     {
+        
 
     }
 

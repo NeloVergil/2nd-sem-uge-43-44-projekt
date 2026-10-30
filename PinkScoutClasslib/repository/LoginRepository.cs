@@ -1,3 +1,4 @@
+using System.Data;
 using System.Security.Cryptography;
 using Microsoft.Data.SqlClient;
 
@@ -119,8 +120,38 @@ public sealed class LoginRepository : Repository
         }
     }
 
+    public User? ReadUser(int id)
+    {
+        string sql = "SELECT * FROM User WHERE id = @Id";
+        using (SqlConnection connection = CreateConnection())
+        {
+            connection.Open();
 
+            using (SqlCommand command = new SqlCommand(sql, connection))
+            {
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        User user = new User(
+                            reader.GetInt32(reader.GetOrdinal("Id")),
+                            reader.GetString(reader.GetOrdinal("UserName")),
+                            reader.GetBoolean(reader.GetOrdinal("IsLeader")),
+                            reader.GetInt32(reader.GetOrdinal("Age"))
+                        );
+
+                        return user;
+
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+            }
+        }
+    }
+    
+    
+    
 }
-
-   
-

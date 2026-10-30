@@ -2,20 +2,20 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using PinkScoutClasslib;
 namespace PinkScoutApp.Pages;
 
-public class ActivityDetails : PageModel
+public class ActivityDetailsModel : PageModel
 {
-    public Activity at { get; set; }
+    public Activity Activity { get; set; }
 
     private ActivityService _activityService;
     
-    public ActivityDetails(ActivityService ActivityService)
+    
+    public ActivityDetailsModel(ActivityService ActivityService)
     {
         _activityService = ActivityService;
     }
     
-    
-    public void OnGet(int id)
+    public void OnGet(string id)
     {
-        at = _activityService.GetActivity(id);
+        Activity = _activityService.GetActivityByName(id);
     }
 }

@@ -3,12 +3,12 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using PinkScoutClasslib;
 namespace PinkScoutApp.Pages;
 
-public class LederCalendar : PageModel
+public class LeaderCalendarModel : PageModel
 {
     private readonly ActivityService _activityService;
     private readonly ActivityRepository _activityRepository;
 
-    public LederCalendar(ActivityService activityService, ActivityRepository activityRepository)
+    public LeaderCalendarModel(ActivityService activityService, ActivityRepository activityRepository)
     {
         _activityService = activityService;
         _activityRepository = activityRepository;
@@ -29,11 +29,11 @@ public class LederCalendar : PageModel
         Schedule = activities.ToDictionary(a => (a.TimeSlot, a.DayOfWeek));
     }
 
-    public IActionResult OnPostCreateActivity(string title, string description)
+    public IActionResult OnPostCreateActivity(int id, string name, string description, string dayOfWeek, string timeSlot, int minimumAge, int maxParticipantNumber)
     {
-        var newActivity = new Activity(Guid.NewGuid().ToString(), title, description, "Mandag", "Formiddag", 0, 10);
+        var newActivity = new Activity(id, name, description, dayOfWeek, timeSlot, minimumAge, maxParticipantNumber);
 
-        _activityRepository.Create(newActivity);
+        _activityRepository.CreateActivity(newActivity);
 
         return RedirectToPage();
     }
