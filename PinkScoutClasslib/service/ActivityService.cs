@@ -6,11 +6,12 @@ public class ActivityService : Repository
     private ActivityRepository _activityRepository;
     private LoginRepository _loginRepository;
 
-    public ActivityService(ActivityRepository activityRepository, LoginRepository loginRepository)
+    public ActivityService( ActivityRepository activityRepository,LoginRepository loginRepository, string connectionString) : base(connectionString)
     {
         _activityRepository = activityRepository;
         _loginRepository = loginRepository;
     }
+
     public List<Activity> GetWeeklySchedule()
     {
         return _activityRepository.GetAllActivities();
