@@ -50,7 +50,11 @@ public class ActivityService
         return _activityRepository.GetAllActivities();
     }
 
-    public 
+    private List<User> GetAllUsers()
+    {
+        return _loginRepository.GetAllUsers();
+    }
+
 }
 
 
