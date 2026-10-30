@@ -1,8 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 using PinkScoutClasslib;
 namespace PinkScoutApp.Pages;
 
+[Authorize(Roles = "leader")]
 public class LeaderCalendarModel : PageModel
 {
     private readonly ActivityService _activityService;
@@ -22,18 +25,64 @@ public class LeaderCalendarModel : PageModel
 
     public void OnGet()
     {
-        var activities = _activityService.GetWeeklySchedule();
-
-        // 2. Sorter dem ind i ugeskemaet ud fra de egenskaber jeres Activity model har
-        // Bemærk: Det kræver at jeres Activity har public properties for DayOfWeek og TimeSlot (f.eks. med store/små bogstaver)
-        Schedule = activities.ToDictionary(a => (a.TimeSlot, a.DayOfWeek));
+        LoadSchedule();
     }
 
     public IActionResult OnPostCreateActivity(string name, string description, string dayOfWeek, string timeSlot, int minimumAge, int maxParticipantNumber)
     {
-        Activity newActivity = new Activity( name, description, dayOfWeek, timeSlot, minimumAge, maxParticipantNumber);
+        Activity newActivity = new Activity(
+            name,
+            description,
+            dayOfWeek,
+            timeSlot,
+            minimumAge,
+            maxParticipantNumber);
 
-        _activityRepository.CreateActivity(newActivity);
+        try
+        {
+            _activityRepository.CreateActivity(newActivity);
+        }
+        catch (InvalidOperationException exception)
+        {
+            ModelState.AddModelError(
+                string.Empty,
+                exception.Message);
+            LoadSchedule();
+            return Page();
+        }
+
+        return RedirectToPage();
+    }
+
+    private void LoadSchedule()
+    {
+        var activities = _activityService.GetWeeklySchedule();
+        Schedule = activities
+            .GroupBy(activity => (activity.TimeSlot, activity.DayOfWeek))
+            .ToDictionary(group => group.Key, group => group.First());
+    }
+
+    public IActionResult OnPostRegister(int activityId)
+    {
+        var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!int.TryParse(userIdValue, out var userId))
+            return Challenge();
+
+        var user = new User(userId, User.Identity?.Name ?? string.Empty, true, 0);
+        var activity = _activityRepository.ReadActivity(activityId);
+        if (activity is null)
+            return NotFound();
+
+        try
+        {
+            _activityService.RegisterUser(user, activity);
+        }
+        catch (InvalidOperationException exception)
+        {
+            ModelState.AddModelError(string.Empty, exception.Message);
+            LoadSchedule();
+            return Page();
+        }
 
         return RedirectToPage();
     }

@@ -45,7 +45,8 @@ public class CreateAccountModel : PageModel
 
         var claims = new List<Claim>
         {
-            new(ClaimTypes.Name, created.Name)
+            new(ClaimTypes.Name, created.Name),
+            new(ClaimTypes.NameIdentifier, created.Id.ToString())
         };
 
         if (created.IsLeader)
