@@ -19,8 +19,11 @@ builder.Services.AddSingleton<LoginRepository>(serviceProvider =>
 
 builder.Services.AddSingleton<ActivityRepository>(serviceProvider =>
 {
-    var initialActivities = new List<Activity>();
-    return new ActivityRepository(initialActivities);
+    var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+    var connectionString = configuration.GetConnectionString("PinkScoutDB")
+        ?? throw new InvalidOperationException(
+            "The connection string 'PinkScoutDB' is not configured.");
+    return new ActivityRepository(connectionString);
 });
 
 builder.Services.AddScoped<ActivityService>();

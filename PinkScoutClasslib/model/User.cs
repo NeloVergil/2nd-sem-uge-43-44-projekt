@@ -17,12 +17,21 @@ public class User
         _age = age;
     }
 
+    public User(int id, string name, bool isLeader, int age)
+    {
+        _id = id;
+        _name = name;
+        _isLeader = isLeader;
+        _age = age;
+    }
+
+
     public int Id 
     {
         get { return _id; }
         set { _id = value; }
     }
-    
+
     public string Name 
     {
         get { return _name; }
@@ -47,4 +56,8 @@ public class User
         set { _age = value; }
     }
 
+    // public override string ToString()
+    // {
+    //     return $"id {Id} navn: {_name}";
+    // }
 }

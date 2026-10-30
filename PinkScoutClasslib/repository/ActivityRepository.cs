@@ -1,55 +1,142 @@
+using Microsoft.Data.SqlClient;
 namespace PinkScoutClasslib;
 
-public class ActivityRepository /*: IActivityRepository*/
+public class ActivityRepository : Repository
 {
-    private List<Activity> _activities;
 
-    public ActivityRepository(List<Activity> activities)
+    public ActivityRepository(string connectionString)
+        : base(connectionString)
     {
-        _activities = activities;
     }
-
-    public void CreateActivity(string id, string title, string description, string dayOfWeek, string timeSlot, int minimumAge, int maximumParticipantCount)
+    public Activity CreateActivity(Activity newActivity)
     {
-        Activity activity =
-            new Activity(id, title, description, dayOfWeek, timeSlot, minimumAge, maximumParticipantCount);
-        _activities.Add(activity);
-    }
-
-    public Activity ReadActivity(string title)
-    {
-        return _activities.FirstOrDefault(a => a.Title == title);
-    }
-
-    public void UpdateActivity(string id, string title, string description, string dayOfWeek, string timeSlot, int minimumAge, int maximumParticipantCount)
-    
-    {
-        Activity activity = _activities.FirstOrDefault(a => a.Title == title);
-        if (activity != null)
+        string Sql =
+            "insert into Activity (Name, Description, DayOfWeek, TimeSlot, MinimumAge, MaxParticipantNumber) output inserted.Id values (@Name, @Description, @DayOfWeek, @TimeSlot, @MinimumAge, @MaxParticipantNumber)";
+        using (SqlConnection connection = CreateConnection())
         {
-            activity.Description = description;
-            activity.DayOfWeek = dayOfWeek;
-            activity.TimeSlot = timeSlot;
-            activity.minimumAge = minimumAge;
-            activity.maximumParticipantCount = maximumParticipantCount;
+            connection.Open();
+
+            using (SqlCommand command = new SqlCommand(Sql, connection))
+            {
+                command.Parameters.AddWithValue("@Name", newActivity.Name);
+                command.Parameters.AddWithValue("@Description", newActivity.Description);
+                command.Parameters.AddWithValue("@DayOfWeek", newActivity.DayOfWeek);
+                command.Parameters.AddWithValue("@TimeSlot", newActivity.TimeSlot);
+                command.Parameters.AddWithValue("@MinimumAge", newActivity.MinimumAge);
+                command.Parameters.AddWithValue(
+                    "@MaxParticipantNumber",
+                    newActivity.MaxParticipantNumber);
+
+                int id = Convert.ToInt32(command.ExecuteScalar());
+                newActivity.Id = id;
+            }
+        }
+        return newActivity;
+
+    }
+    public Activity? ReadActivity(int id)
+    {
+        string sql = "SELECT * FROM Activity WHERE Id = @Id";
+
+        using (SqlConnection connection = CreateConnection())
+        {
+            connection.Open();
+
+            using (SqlCommand command = new SqlCommand(sql, connection))
+            {
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        Activity activity = new Activity(
+                            reader.GetInt32(reader.GetOrdinal("Id")),
+                            reader.GetString(reader.GetOrdinal("Name")),
+                            reader.GetString(reader.GetOrdinal("Description")),
+                            reader.GetString(reader.GetOrdinal("DayOfWeek")),
+                            reader.GetString(reader.GetOrdinal("TimeSlot")),
+                            reader.GetInt32(reader.GetOrdinal("MinimumAge")),
+                            reader.GetInt32(reader.GetOrdinal("MaxParticipantNumber"))
+                        );
+
+                        return activity;
+
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+            }
         }
     }
 
-        public void DeleteActivity(string title)
+    public void UpdateActivity(Activity updatedActivity)
     {
-        Activity activity = _activities.FirstOrDefault(a => a.Title == title);
-        if (activity != null)
+        string Sql =
+        "insert into Activity (Name, Description, DayOfWeek, Timeslot, MinimumAge, MaximumParticipantNumber) values (@Name, @Description, @DayOfWeek, @Timeslot, @MinimumAge, @MaximumParticipantCount)";
+
+        using (SqlConnection connection = CreateConnection())
+
+        using (SqlCommand command = new SqlCommand(Sql, connection))
         {
-            _activities.Remove(activity);
+            connection.Open();
+
+            command.Parameters.AddWithValue("@Name", updatedActivity.Name);
+            command.Parameters.AddWithValue("@Description", updatedActivity.Description);
+            command.Parameters.AddWithValue("@DayOfWeek", updatedActivity.DayOfWeek);
+            command.Parameters.AddWithValue("@Timeslot", updatedActivity.TimeSlot);
+            command.Parameters.AddWithValue("@MinimumAge", updatedActivity.MinimumAge);
+            command.Parameters.AddWithValue("@MaximumParticipantCount", updatedActivity.MaxParticipantNumber);
+            command.ExecuteNonQuery();
         }
-    
+
     }
+
+    public void DeleteActivity(int id)
+    {
+        string sql = "DELETE FROM Activity WHERE Id = @Id";
+
+        using (SqlConnection connection = CreateConnection())
+        {
+            connection.Open();
+
+            using (SqlCommand command = new SqlCommand(sql, connection))
+            {
+                command.Parameters.AddWithValue("@Id", id);
+
+                command.ExecuteNonQuery();
+            }
+        }
+    }
+
     public List<Activity> GetAllActivities()
     {
-        return _activities;
+        const string sql = """
+            SELECT Id, Name, Description, DayOfWeek, TimeSlot,
+                   MinimumAge, MaxParticipantNumber
+            FROM Activity
+            """;
+
+        using SqlConnection connection = CreateConnection();
+        connection.Open();
+
+        using SqlCommand command = new SqlCommand(sql, connection);
+        using SqlDataReader reader = command.ExecuteReader();
+
+        List<Activity> activities = new List<Activity>();
+        while (reader.Read())
+        {
+            activities.Add(new Activity(
+                reader.GetInt32(reader.GetOrdinal("Id")),
+                reader.GetString(reader.GetOrdinal("Name")),
+                reader.GetString(reader.GetOrdinal("Description")),
+                reader.GetString(reader.GetOrdinal("DayOfWeek")),
+                reader.GetString(reader.GetOrdinal("TimeSlot")),
+                reader.GetInt32(reader.GetOrdinal("MinimumAge")),
+                reader.GetInt32(reader.GetOrdinal("MaxParticipantNumber"))));
+        }
+
+        return activities;
     }
+
 }
-
-
-
-

@@ -1,14 +1,17 @@
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using PinkScoutClasslib;
 namespace PinkScoutApp.Pages;
 
-public class Calendar : PageModel
+public class LeaderCalendarModel : PageModel
 {
     private readonly ActivityService _activityService;
+    private readonly ActivityRepository _activityRepository;
 
-    public Calendar(ActivityService activityService)
+    public LeaderCalendarModel(ActivityService activityService, ActivityRepository activityRepository)
     {
         _activityService = activityService;
+        _activityRepository = activityRepository;
     }
 
     public List<string> Days { get; } = new List<string> { "Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag", "Søndag" };
@@ -24,5 +27,14 @@ public class Calendar : PageModel
         // 2. Sorter dem ind i ugeskemaet ud fra de egenskaber jeres Activity model har
         // Bemærk: Det kræver at jeres Activity har public properties for DayOfWeek og TimeSlot (f.eks. med store/små bogstaver)
         Schedule = activities.ToDictionary(a => (a.TimeSlot, a.DayOfWeek));
+    }
+
+    public IActionResult OnPostCreateActivity(string name, string description, string dayOfWeek, string timeSlot, int minimumAge, int maxParticipantNumber)
+    {
+        Activity newActivity = new Activity( name, description, dayOfWeek, timeSlot, minimumAge, maxParticipantNumber);
+
+        _activityRepository.CreateActivity(newActivity);
+
+        return RedirectToPage();
     }
 }
