@@ -4,18 +4,20 @@ namespace PinkScoutApp.Pages;
 
 public class ActivityDetailsModel : PageModel
 {
-    public Activity Activity { get; set; }
-
-    private ActivityService _activityService;
+    private readonly ActivityService _activityService;
     
+    public Activity Activity { get; set; }
     
     public ActivityDetailsModel(ActivityService ActivityService)
     {
         _activityService = ActivityService;
     }
+    public Activity CurrentActivity { get; set; }
     
-    public void OnGet(string id)
+    
+    public void OnGet(int id)
     {
-        Activity = _activityService.GetActivityByName(id);
+        CurrentActivity = _activityService.GetActivity(id);
     }
+    
 }

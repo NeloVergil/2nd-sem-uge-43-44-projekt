@@ -37,4 +37,10 @@ public class LeaderCalendarModel : PageModel
 
         return RedirectToPage();
     }
+
+    public IActionResult OnPostDeleteActivity(int activityId)
+    {
+        _activityRepository.DeleteActivity(activityId);
+        return RedirectToPage();
+    }
 }

@@ -104,7 +104,7 @@
                                     @if (Model.Schedule.TryGetValue((slot, day), out var activity))
                                     {
                                         @* asp-route-id sender automatisk aktivitetens int ID med over i URL'en *@
-                                        <a asp-page="/ActivityDetails" asp-route-id="@activity.Name"
+                                        <a asp-page="/ActivityDetails" asp-route-id="@activity.Id"
                                            class="d-block card activity-link bg-primary text-white p-2">
                                             <div class="activity-slot">
                                                 <span class="fw-bold small">@activity.Name</span>
@@ -215,11 +215,11 @@
         <form method="post" asp-page-handler="DeleteActivity">
             <div class="mb-3">
                 <label for="deleteSelect" class="form-label small fw-bold text-muted">Vælg aktivitet:</label>
-                <select class="form-select form-select-sm" id="deleteSelect" name="activityName" required>
+                <select class="form-select form-select-sm" id="deleteSelect" name="activityId" required>
                     <option value="" selected disabled>Vælg...</option>
                     @foreach (var item in Model.Schedule.Values)
                     {
-                        <option value="@item.Name">@item.Name</option>
+                        <option value="@item.Id">@item.Name</option>
                     }
                 </select>
             </div>
