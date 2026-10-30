@@ -8,14 +8,14 @@ public class ActivityRepository : Repository
         : base(connectionString)
     {
     }
-    private readonly string _connectionString;
-
     public Activity CreateActivity(Activity newActivity)
     {
         string Sql =
             "insert into Activity (Name, Description, DayOfWeek, TimeSlot, MinimumAge, MaxParticipantNumber) output inserted.Id values (@Name, @Description, @DayOfWeek, @TimeSlot, @MinimumAge, @MaxParticipantNumber)";
         using (SqlConnection connection = CreateConnection())
         {
+            connection.Open();
+
             using (SqlCommand command = new SqlCommand(Sql, connection))
             {
                 command.Parameters.AddWithValue("@Name", newActivity.Name);
@@ -23,8 +23,11 @@ public class ActivityRepository : Repository
                 command.Parameters.AddWithValue("@DayOfWeek", newActivity.DayOfWeek);
                 command.Parameters.AddWithValue("@TimeSlot", newActivity.TimeSlot);
                 command.Parameters.AddWithValue("@MinimumAge", newActivity.MinimumAge);
-                command.Parameters.AddWithValue("@MaxParticipantNumber", newActivity.MaxParticipantNumber);
-                int id = (int) command.ExecuteScalar();
+                command.Parameters.AddWithValue(
+                    "@MaxParticipantNumber",
+                    newActivity.MaxParticipantNumber);
+
+                int id = Convert.ToInt32(command.ExecuteScalar());
                 newActivity.Id = id;
             }
         }                
@@ -76,6 +79,8 @@ public class ActivityRepository : Repository
 
         using (SqlCommand command = new SqlCommand(Sql, connection))
         {
+            connection.Open();
+
             command.Parameters.AddWithValue("@Name", updatedActivity.Name);
             command.Parameters.AddWithValue("@Description", updatedActivity.Description);
             command.Parameters.AddWithValue("@DayOfWeek", updatedActivity.DayOfWeek);
@@ -112,4 +117,3 @@ public class ActivityRepository : Repository
     }
 
 }
-
