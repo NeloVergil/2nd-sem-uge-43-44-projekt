@@ -1,12 +1,12 @@
 using Microsoft.Data.SqlClient;
 namespace PinkScoutClasslib;
 
-public class ActivityService : Repository
+public class ActivityService
 {
     private ActivityRepository _activityRepository;
     private LoginRepository _loginRepository;
 
-    public ActivityService( ActivityRepository activityRepository,LoginRepository loginRepository, string connectionString) : base(connectionString)
+    public ActivityService(ActivityRepository activityRepository, LoginRepository loginRepository, string connectionString) : base(connectionString)
     {
         _activityRepository = activityRepository;
         _loginRepository = loginRepository;
