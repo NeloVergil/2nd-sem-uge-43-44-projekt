@@ -30,7 +30,7 @@ public class ActivityRepository : Repository
                 int id = Convert.ToInt32(command.ExecuteScalar());
                 newActivity.Id = id;
             }
-        }                
+        }
         return newActivity;
 
     }
@@ -111,7 +111,30 @@ public class ActivityRepository : Repository
 
     public List<Activity> GetAllActivities()
     {
+        const string sql = """
+            SELECT Id, Name, Description, DayOfWeek, TimeSlot,
+                   MinimumAge, MaxParticipantNumber
+            FROM Activity
+            """;
+
+        using SqlConnection connection = CreateConnection();
+        connection.Open();
+
+        using SqlCommand command = new SqlCommand(sql, connection);
+        using SqlDataReader reader = command.ExecuteReader();
+
         List<Activity> activities = new List<Activity>();
+        while (reader.Read())
+        {
+            activities.Add(new Activity(
+                reader.GetInt32(reader.GetOrdinal("Id")),
+                reader.GetString(reader.GetOrdinal("Name")),
+                reader.GetString(reader.GetOrdinal("Description")),
+                reader.GetString(reader.GetOrdinal("DayOfWeek")),
+                reader.GetString(reader.GetOrdinal("TimeSlot")),
+                reader.GetInt32(reader.GetOrdinal("MinimumAge")),
+                reader.GetInt32(reader.GetOrdinal("MaxParticipantNumber"))));
+        }
 
         return activities;
     }
