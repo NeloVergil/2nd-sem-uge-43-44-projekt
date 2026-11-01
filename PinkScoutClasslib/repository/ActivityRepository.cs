@@ -10,13 +10,26 @@ public class ActivityRepository : Repository
     }
     public Activity CreateActivity(Activity newActivity)
     {
-        string Sql =
-            "insert into Activity (Name, Description, DayOfWeek, TimeSlot, MinimumAge, MaxParticipantNumber) output inserted.Id values (@Name, @Description, @DayOfWeek, @TimeSlot, @MinimumAge, @MaxParticipantNumber)";
+        const string sql = """
+            IF EXISTS (
+                SELECT 1
+                FROM Activity
+                WHERE DayOfWeek = @DayOfWeek AND TimeSlot = @TimeSlot
+            )
+                THROW 50001, 'An activity already exists at this day and time slot.', 1;
+
+            INSERT INTO Activity
+                (Name, Description, DayOfWeek, TimeSlot, MinimumAge, MaxParticipantNumber)
+            OUTPUT INSERTED.Id
+            VALUES
+                (@Name, @Description, @DayOfWeek, @TimeSlot, @MinimumAge, @MaxParticipantNumber);
+            """;
+
         using (SqlConnection connection = CreateConnection())
         {
             connection.Open();
 
-            using (SqlCommand command = new SqlCommand(Sql, connection))
+            using (SqlCommand command = new SqlCommand(sql, connection))
             {
                 command.Parameters.AddWithValue("@Name", newActivity.Name);
                 command.Parameters.AddWithValue("@Description", newActivity.Description);
@@ -27,8 +40,17 @@ public class ActivityRepository : Repository
                     "@MaxParticipantNumber",
                     newActivity.MaxParticipantNumber);
 
-                int id = Convert.ToInt32(command.ExecuteScalar());
-                newActivity.Id = id;
+                try
+                {
+                    int id = Convert.ToInt32(command.ExecuteScalar());
+                    newActivity.Id = id;
+                }
+                catch (SqlException exception) when (exception.Number == 50001)
+                {
+                    throw new InvalidOperationException(
+                        "An activity already exists at this day and time slot.",
+                        exception);
+                }
             }
         }
         return newActivity;
@@ -44,6 +66,8 @@ public class ActivityRepository : Repository
 
             using (SqlCommand command = new SqlCommand(sql, connection))
             {
+                command.Parameters.AddWithValue("@Id", id);
+
                 using (SqlDataReader reader = command.ExecuteReader())
                 {
                     if (reader.Read())
@@ -68,6 +92,66 @@ public class ActivityRepository : Repository
                 }
             }
         }
+    }
+
+    public bool RegisterUser(User user, Activity activity)
+    {
+        const string sql = """
+            IF EXISTS (
+                SELECT 1
+                FROM UserActivity
+                WHERE UserId = @UserId AND ActivityId = @ActivityId
+            )
+                SELECT 0;
+            ELSE IF (
+                SELECT COUNT(*)
+                FROM UserActivity
+                WHERE ActivityId = @ActivityId
+            ) >= @MaxParticipantNumber
+                SELECT -1;
+            ELSE
+            BEGIN
+                INSERT INTO UserActivity (UserId, ActivityId)
+                VALUES (@UserId, @ActivityId);
+                SELECT 1;
+            END
+            """;
+
+        using SqlConnection connection = CreateConnection();
+        connection.Open();
+
+        using SqlCommand command = new SqlCommand(sql, connection);
+        command.Parameters.AddWithValue("@UserId", user.Id);
+        command.Parameters.AddWithValue("@ActivityId", activity.Id);
+        command.Parameters.AddWithValue(
+            "@MaxParticipantNumber",
+            activity.MaxParticipantNumber);
+
+        int result = Convert.ToInt32(command.ExecuteScalar());
+        if (result == -1)
+        {
+            throw new InvalidOperationException(
+                "The activity has reached its maximum participant count.");
+        }
+
+        return result == 1;
+    }
+
+    public bool UnregisterUser(User user, Activity activity)
+    {
+        const string sql = """
+            DELETE FROM UserActivity
+            WHERE UserId = @UserId AND ActivityId = @ActivityId
+            """;
+
+        using SqlConnection connection = CreateConnection();
+        connection.Open();
+
+        using SqlCommand command = new SqlCommand(sql, connection);
+        command.Parameters.AddWithValue("@UserId", user.Id);
+        command.Parameters.AddWithValue("@ActivityId", activity.Id);
+
+        return command.ExecuteNonQuery() > 0;
     }
 
     public void UpdateActivity(Activity updatedActivity)

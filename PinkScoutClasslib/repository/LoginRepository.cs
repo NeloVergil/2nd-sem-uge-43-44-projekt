@@ -151,7 +151,39 @@ public sealed class LoginRepository : Repository
             }
         }
     }
-    
-    
-    
+
+    public List<User> GetAllUsers()
+    {
+        List<User> users = new List<User>();
+
+        string sql = "SELECT * FROM User";
+
+        using (SqlConnection connection = CreateConnection())
+        {
+            connection.Open();
+
+            using (SqlCommand command = new SqlCommand(sql, connection))
+            {
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        User user = new User(
+                            reader.GetInt32(reader.GetOrdinal("Id")),
+                            reader.GetString(reader.GetOrdinal("UserName")),
+                            reader.GetBoolean(reader.GetOrdinal("IsLeader")),
+                            reader.GetInt32(reader.GetOrdinal("Age"))
+                        );
+
+                        users.Add(user);
+                    }
+                }
+            }
+        }
+
+        return users;
+    }
+
+
+
 }

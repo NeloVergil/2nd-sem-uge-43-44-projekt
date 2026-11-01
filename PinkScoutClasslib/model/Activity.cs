@@ -10,9 +10,9 @@ public class Activity
     public int MinimumAge { get; set; }
     public int MaxParticipantNumber { get; set; }
 
-    // public List<User> Users { get; set; }
+    public List<User> Users { get; set; }
 
-    public Activity(int id, string name, string description, string dayOfWeek, string timeSlot, int minimumAge, int maxParticipantNumber/*, List<User> users*/)
+    public Activity(int id, string name, string description, string dayOfWeek, string timeSlot, int minimumAge, int maxParticipantNumber)
     {
         Id = id;
         Name = name;
@@ -21,18 +21,17 @@ public class Activity
         TimeSlot = timeSlot;
         MinimumAge = minimumAge;
         MaxParticipantNumber = maxParticipantNumber;
-        // Users = users;
+        Users = new List<User>();
     }
-    public Activity(string name, string description, string dayOfWeek, string timeSlot, int minimumAge, int maxParticipantNumber/*, List<User> users*/)
+    public Activity(string name, string description, string dayOfWeek, string timeSlot, int minimumAge, int maxParticipantNumber)
     {
-        //Id = id;
         Name = name;
         Description = description;
         DayOfWeek = dayOfWeek;
         TimeSlot = timeSlot;
         MinimumAge = minimumAge;
         MaxParticipantNumber = maxParticipantNumber;
-        // Users = users;
+        Users = new List<User>();
     }
 
 }

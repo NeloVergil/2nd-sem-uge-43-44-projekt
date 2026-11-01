@@ -48,6 +48,8 @@
 </style>
 
 <div class="container-fluid my-5 px-4">
+    <div asp-validation-summary="ModelOnly" class="alert alert-warning" role="alert"></div>
+
     <!-- Overskrift -->
     <div class="row mb-4 text-center">
         <div class="col">
@@ -104,13 +106,19 @@
                                     @if (Model.Schedule.TryGetValue((slot, day), out var activity))
                                     {
                                         @* asp-route-id sender automatisk aktivitetens int ID med over i URL'en *@
-                                        <a asp-page="/ActivityDetails" asp-route-id="@activity.Name"
+                                        <a asp-page="/ActivityDetails" asp-route-id="@activity.Id"
                                            class="d-block card activity-link bg-primary text-white p-2">
                                             <div class="activity-slot">
                                                 <span class="fw-bold small">@activity.Name</span>
                                                 <span class="badge bg-white text-dark btn-sm mt-1">Se info →</span>
                                             </div>
                                         </a>
+                                        <form method="post" asp-page-handler="Register" class="mt-1">
+                                            <input type="hidden" name="activityId" value="@activity.Id" />
+                                            <button type="submit" class="btn btn-sm btn-outline-success">
+                                                Register
+                                            </button>
+                                        </form>
                                     }
                                     else
                                     {
@@ -186,11 +194,11 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="minAge" class="form-label fw-bold">Minimumsalder</label>
-                            <input type="number" class="form-control" id="minAge" name="minimumAge" value="6" min="1" required>
+                            <input type="number" class="form-control" id="minAge" name="MinimumAge" value="6" min="1" required>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="maxScouts" class="form-label fw-bold">Max deltagere</label>
-                            <input type="number" class="form-control" id="maxScouts" name="maximumParticipantCount" value="20" min="1" required>
+                            <input type="number" class="form-control" id="maxScouts" name="MaxParticipantNumber" value="20" min="1" required>
                         </div>
                     </div>
                     
@@ -215,11 +223,11 @@
         <form method="post" asp-page-handler="DeleteActivity">
             <div class="mb-3">
                 <label for="deleteSelect" class="form-label small fw-bold text-muted">Vælg aktivitet:</label>
-                <select class="form-select form-select-sm" id="deleteSelect" name="activityName" required>
+                <select class="form-select form-select-sm" id="deleteSelect" name="activityId" required>
                     <option value="" selected disabled>Vælg...</option>
                     @foreach (var item in Model.Schedule.Values)
                     {
-                        <option value="@item.Name">@item.Name</option>
+                        <option value="@item.Id">@item.Name</option>
                     }
                 </select>
             </div>

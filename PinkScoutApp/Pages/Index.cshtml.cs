@@ -54,7 +54,8 @@ public class IndexModel : PageModel
     {
         var claims = new List<Claim>
         {
-            new(ClaimTypes.Name, user.Name)
+            new(ClaimTypes.Name, user.Name),
+            new(ClaimTypes.NameIdentifier, user.Id.ToString())
         };
 
         if (user.IsLeader)
